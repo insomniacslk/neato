@@ -92,8 +92,7 @@ func loginRequestCode(email string) error {
 		"client_id":  "KY4YbVAvtgB7lp8vIbWQ7zLk3hssZlhR",
 		"connection": "email",
 	}
-	// ignore response, we assume that an HTTP 200 is good enough
-	// TODO print response if in debug mode
+	// ignore response content, we assume that an HTTP 200 is good enough
 	_, err := loginRequest(uri, body)
 	return err
 }
@@ -129,7 +128,7 @@ func loginRequestToken(email, code string) (string, error) {
 	if err := json.Unmarshal(resp, &tr); err != nil {
 		return "", fmt.Errorf("failed to unmarshal response: %w", err)
 	}
-	return tr.AccessToken, nil
+	return tr.IDToken, nil
 }
 
 func loginRequest(uri string, dataMap map[string]string) ([]byte, error) {
@@ -153,7 +152,9 @@ func loginRequest(uri string, dataMap map[string]string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to read HTTP body: %w", err)
 	}
-	// TODO print body in debug mode
+	if flagDebug {
+		log.Printf("login request response: %s", body)
+	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("expected HTTP 200 OK, got %s", resp.Status)
 	}
