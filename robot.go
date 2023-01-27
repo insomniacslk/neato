@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net"
 	"net/url"
 	"strings"
@@ -56,9 +55,6 @@ func (r *Robot) Header(body []byte) *url.Values {
 	h.Write([]byte(msg))
 	signature := hex.EncodeToString(h.Sum(nil))
 	header.Set("Authorization", "NEATOAPP "+signature)
-
-	log.Printf("Auth %s", signature)
-	log.Printf("Date %s", date)
 
 	return &header
 }
