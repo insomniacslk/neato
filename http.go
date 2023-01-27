@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"time"
@@ -48,7 +47,6 @@ func httpGet(uri string, header *url.Values, skipVerify bool, response interface
 }
 
 func httpPost(uri string, header *url.Values, dataMap map[string]interface{}, skipVerify bool, response interface{}) error {
-	log.Printf("URI %s", uri)
 	data, err := json.Marshal(dataMap)
 	if err != nil {
 		return fmt.Errorf("failed to marshal request data to JSON: %w", err)
