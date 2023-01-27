@@ -2,6 +2,7 @@ package neato
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,7 +12,7 @@ import (
 	"time"
 )
 
-func httpGet(uri string, header *url.Values, response interface{}) error {
+func httpGet(uri string, header *url.Values, skipVerify bool, response interface{}) error {
 	req, err := http.NewRequest(http.MethodGet, uri, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
@@ -23,7 +24,10 @@ func httpGet(uri string, header *url.Values, response interface{}) error {
 			}
 		}
 	}
-	client := http.Client{Timeout: 5 * time.Second}
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: skipVerify},
+	}
+	client := &http.Client{Transport: tr, Timeout: 5 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("HTTP GET failed: %w", err)
@@ -43,7 +47,7 @@ func httpGet(uri string, header *url.Values, response interface{}) error {
 	return nil
 }
 
-func httpPost(uri string, header *url.Values, dataMap map[string]string, response interface{}) error {
+func httpPost(uri string, header *url.Values, dataMap map[string]string, skipVerify bool, response interface{}) error {
 	log.Printf("URI %s", uri)
 	data, err := json.Marshal(dataMap)
 	if err != nil {
@@ -62,7 +66,10 @@ func httpPost(uri string, header *url.Values, dataMap map[string]string, respons
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	client := http.Client{Timeout: 5 * time.Second}
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: skipVerify},
+	}
+	client := &http.Client{Transport: tr, Timeout: 5 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("HTTP POST failed: %w", err)

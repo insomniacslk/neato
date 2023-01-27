@@ -61,9 +61,9 @@ func (s *PasswordSession) SaveConfig() error {
 }
 
 func (s *PasswordSession) post(path string, dataMap map[string]string, response interface{}) error {
-	return httpPost(s.endpoint+"/"+path, s.header, dataMap, response)
+	return httpPost(s.endpoint+"/"+path, s.header, dataMap, false, response)
 }
 
 func (s *PasswordSession) get(path string, response interface{}) error {
-	return httpGet(s.endpoint+"/"+path, s.header, response)
+	return httpGet(s.endpoint+"/"+path, s.header, false, response)
 }
