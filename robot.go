@@ -82,6 +82,68 @@ var (
 	StateError   State = 4
 )
 
+type Action int
+
+var (
+	// TODO validate that this is actually invalid. It seems to be used when the
+	// robot is docked
+	ActionInvalid              Action = 0
+	ActionHouseCleaning        Action = 1
+	ActionSpotCleaning         Action = 2
+	ActionManualCleaning       Action = 3
+	ActionDocking              Action = 4
+	ActionUserMenuActive       Action = 5
+	ActionSuspendedCleaning    Action = 6
+	ActionUpdating             Action = 7
+	ActionCopyingLogs          Action = 8
+	ActionRecoveringLocation   Action = 9
+	ActionIECTest              Action = 10
+	ActionMapCleaning          Action = 11
+	ActionExploringMap         Action = 12
+	ActionAcquiringMapIDs      Action = 13
+	ActionCreatingMap          Action = 14
+	ActionSuspendedExploration Action = 15
+)
+
+func (a Action) String() string {
+	switch a {
+	case ActionInvalid:
+		return "invalid"
+	case ActionHouseCleaning:
+		return "house cleaning"
+	case ActionSpotCleaning:
+		return "spot cleaning"
+	case ActionManualCleaning:
+		return "manual cleaning"
+	case ActionDocking:
+		return "docking"
+	case ActionUserMenuActive:
+		return "user menu active"
+	case ActionSuspendedCleaning:
+		return "suspended cleaning"
+	case ActionUpdating:
+		return "updating"
+	case ActionCopyingLogs:
+		return "copying logs"
+	case ActionRecoveringLocation:
+		return "recovering location"
+	case ActionIECTest:
+		return "IEC test"
+	case ActionMapCleaning:
+		return "map cleaning"
+	case ActionExploringMap:
+		return "exploring map"
+	case ActionAcquiringMapIDs:
+		return "acquiring map IDs"
+	case ActionCreatingMap:
+		return "creating map"
+	case ActionSuspendedExploration:
+		return "suspended exploration"
+	default:
+		return "unknown"
+	}
+}
+
 func (s State) String() string {
 	switch s {
 	case StateInvalid:
@@ -105,7 +167,7 @@ type RobotState struct {
 	Result   Result      `json:"result"`
 	Data     interface{} `json:"data"`
 	State    State       `json:"state"`
-	Action   int         `json:"action"`
+	Action   Action      `json:"action"`
 	Error    *string     `json:"error"`
 	Alert    *string     `json:"alert"`
 	Cleaning struct {
@@ -160,7 +222,7 @@ func (s *RobotState) String() string {
 	if s.Alert != nil {
 		alert = *s.Alert
 	}
-	return fmt.Sprintf("State: %s, Error: %s, Alert: %s", s.State, errStr, alert)
+	return fmt.Sprintf("State: %s, Action: %s, Error: %s, Alert: %s", s.State, s.Action, errStr, alert)
 }
 
 func (r *Robot) State() (*RobotState, error) {
