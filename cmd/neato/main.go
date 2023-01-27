@@ -49,11 +49,13 @@ func init() {
 	rootCmd.AddCommand(mapsCmd)
 	rootCmd.AddCommand(stateCmd)
 	rootCmd.AddCommand(startCmd)
+	rootCmd.AddCommand(stopCmd)
 	initLoginCmd()
 	initRobotsCmd()
 	initMapsCmd()
 	initStateCmd()
 	initStartCmd()
+	initStopCmd()
 }
 
 func initConfig() {

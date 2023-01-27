@@ -124,6 +124,18 @@ type RobotState struct {
 	} `json:"meta"`
 }
 
+func (s *RobotState) String() string {
+	errStr := "<not set>"
+	if s.Error != nil {
+		errStr = *s.Error
+	}
+	alert := "<not set>"
+	if s.Alert != nil {
+		alert = *s.Alert
+	}
+	return fmt.Sprintf("State: %d, Error: %s, Alert: %s", s.State, errStr, alert)
+}
+
 func (r *Robot) State() (*RobotState, error) {
 	var resp RobotState
 	dataMap := map[string]interface{}{
@@ -213,6 +225,24 @@ func (r *Robot) Start(opts *CleaningOptions) error {
 	var resp RobotState
 	if err := r.post(dataMap, &resp); err != nil {
 		return fmt.Errorf("start request failed: %w", err)
+	}
+	if resp.Result != "ok" {
+		return fmt.Errorf("start request failed: %s", resp.Result)
+	}
+	return nil
+}
+
+func (r *Robot) Stop() error {
+	dataMap := map[string]interface{}{
+		"reqId": "1",
+		"cmd":   "stopCleaning",
+	}
+	var resp RobotState
+	if err := r.post(dataMap, &resp); err != nil {
+		return fmt.Errorf("stop request failed: %w", err)
+	}
+	if resp.Result != "ok" {
+		return fmt.Errorf("stop request failed: %s", resp.Result)
 	}
 	return nil
 }
