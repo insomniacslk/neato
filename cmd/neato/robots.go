@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/url"
 
@@ -22,8 +23,6 @@ var robotsCmd = &cobra.Command{
 				header.Add(k, h.(string))
 			}
 		}
-		log.Printf("Endpoint: %s", endpoint)
-		log.Printf("Header: %+v", header.Get("authorization"))
 		if endpoint == "" || header.Get("authorization") == "" {
 			log.Fatalf("No session.endpoint or session.header.Authorization found in configuration file, you need to log in first")
 		}
@@ -31,10 +30,10 @@ var robotsCmd = &cobra.Command{
 		a := neato.NewAccount(s)
 		robots, err := a.Robots()
 		if err != nil {
-			log.Fatalf("Robots: %v", err)
+			log.Fatalf("Cannot get robots: %v", err)
 		}
 		for idx, r := range robots {
-			log.Printf("%d) %s\n", idx, r)
+			fmt.Printf("%d) %s\n", idx+1, r)
 		}
 	},
 }
