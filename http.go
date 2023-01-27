@@ -47,7 +47,7 @@ func httpGet(uri string, header *url.Values, skipVerify bool, response interface
 	return nil
 }
 
-func httpPost(uri string, header *url.Values, dataMap map[string]string, skipVerify bool, response interface{}) error {
+func httpPost(uri string, header *url.Values, dataMap map[string]interface{}, skipVerify bool, response interface{}) error {
 	log.Printf("URI %s", uri)
 	data, err := json.Marshal(dataMap)
 	if err != nil {

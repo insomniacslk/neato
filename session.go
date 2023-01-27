@@ -30,7 +30,7 @@ func (s *PasswordSession) Login(email, password string) error {
 		return fmt.Errorf("failed to get random bytes")
 	}
 
-	data := map[string]string{
+	data := map[string]interface{}{
 		"email":    email,
 		"password": password,
 		"platform": "ios",
@@ -60,7 +60,7 @@ func (s *PasswordSession) SaveConfig() error {
 	return nil
 }
 
-func (s *PasswordSession) post(path string, dataMap map[string]string, response interface{}) error {
+func (s *PasswordSession) post(path string, dataMap map[string]interface{}, response interface{}) error {
 	return httpPost(s.endpoint+"/"+path, s.header, dataMap, false, response)
 }
 

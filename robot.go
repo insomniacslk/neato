@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -125,7 +126,7 @@ type RobotState struct {
 
 func (r *Robot) State() (*RobotState, error) {
 	var resp RobotState
-	dataMap := map[string]string{
+	dataMap := map[string]interface{}{
 		"reqId": "1",
 		"cmd":   "getRobotState",
 	}
@@ -160,41 +161,63 @@ var (
 type CleaningOptions struct {
 	CleaningMode   CleaningMode
 	NavigationMode NavigationMode
-	Category       Category
+	Category       *Category
 	BoundaryID     int
 	MapID          int
 }
 
-func NewCleaningOptions(hasPersistentMaps bool) *CleaningOptions {
-	category := CategoryNonPersistentMap
-	if hasPersistentMaps {
-		category = CategoryPersistentMap
-	}
+func NewCleaningOptions() *CleaningOptions {
 	return &CleaningOptions{
 		CleaningMode:   CleaningModeEco,
 		NavigationMode: NavigationModeNormal,
-		Category:       category,
+		Category:       &CategoryNonPersistentMap,
 	}
 }
 
-func (r *Robot) HasPersistentMaps() bool {
-	/*
-		serviceVersion := r.State.AvailableServices
-		return r.HasPersistentMaps && (serviceVersion == "basic-3" || serviceVersion == "basic-4")
-	*/
-	return false
-}
-
 func (r *Robot) Start(opts *CleaningOptions) error {
-	/*
-		if opts == nil {
-			opts = NewCleaningOptions(r.HasPersistentMaps())
+	if opts == nil {
+		opts = NewCleaningOptions()
+	}
+	state, err := r.State()
+	if err != nil {
+		return fmt.Errorf("failed to get robot state: %w", err)
+	}
+	serviceVersion := state.AvailableServices.HouseCleaning
+	if opts.Category == nil {
+		if serviceVersion == "basic-3" || serviceVersion == "basic-4" {
+			opts.Category = &CategoryPersistentMap
 		}
-	*/
+	}
+	dataMap := map[string]interface{}{
+		"reqId": "1",
+		"cmd":   "startCleaning",
+		"params": map[string]interface{}{
+			"category": strconv.FormatInt(int64(*opts.Category), 10),
+		},
+	}
+	switch serviceVersion {
+	case "basic-1":
+		dataMap["params"].(map[string]interface{})["mode"] = int(opts.CleaningMode)
+		dataMap["params"].(map[string]interface{})["modifier"] = 1
+	case "basic-2":
+		dataMap["params"].(map[string]interface{})["mode"] = int(opts.CleaningMode)
+		dataMap["params"].(map[string]interface{})["modifier"] = 1
+		dataMap["params"].(map[string]interface{})["navigationMode"] = opts.NavigationMode
+	case "minimal-2":
+		dataMap["params"].(map[string]interface{})["navigationMode"] = opts.NavigationMode
+	case "basic-3", "basic-4":
+		dataMap["params"].(map[string]interface{})["mode"] = int(opts.CleaningMode)
+		dataMap["params"].(map[string]interface{})["modifier"] = 1
+		dataMap["params"].(map[string]interface{})["navigationMode"] = opts.NavigationMode
+	}
+	var resp RobotState
+	if err := r.post(dataMap, &resp); err != nil {
+		return fmt.Errorf("start request failed: %w", err)
+	}
 	return nil
 }
 
-func (r *Robot) post(dataMap map[string]string, response interface{}) error {
+func (r *Robot) post(dataMap map[string]interface{}, response interface{}) error {
 	// remove port from nucleo URL
 	uri, err := url.Parse(r.NucleoURL)
 	if err != nil {

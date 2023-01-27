@@ -1,16 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 
 	"github.com/spf13/cobra"
 )
 
-var stateCmd = &cobra.Command{
-	Use:   "state",
-	Short: "Get robot state",
+var startCmd = &cobra.Command{
+	Use:   "start",
+	Short: "Start cleaning",
 	Run: func(cmd *cobra.Command, args []string) {
 		robotIdx := 0
 		if len(args) > 0 {
@@ -37,13 +36,11 @@ var stateCmd = &cobra.Command{
 			log.Fatalf("Robot index is too high: got %d, must be in range 0-%d", robotIdx, len(robots)-1)
 		}
 		robot := robots[robotIdx]
-		state, err := robot.State()
-		if err != nil {
-			log.Fatalf("Failed to get robot state: %v", err)
+		if err := robot.Start(nil); err != nil {
+			log.Fatalf("Failed to start robot: %v", err)
 		}
-		fmt.Printf("%+v\n", state)
 	},
 }
 
-func initStateCmd() {
+func initStartCmd() {
 }
