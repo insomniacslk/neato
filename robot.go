@@ -72,12 +72,39 @@ var (
 	ResultNotOnChargeBase Result = "not_on_charge_base"
 )
 
+type State int
+
+var (
+	StateInvalid State = 0
+	StateIdle    State = 1
+	StateBusy    State = 2
+	StatePaused  State = 3
+	StateError   State = 4
+)
+
+func (s State) String() string {
+	switch s {
+	case StateInvalid:
+		return "invalid"
+	case StateIdle:
+		return "idle"
+	case StateBusy:
+		return "busy"
+	case StatePaused:
+		return "paused"
+	case StateError:
+		return "error"
+	default:
+		return "unknown"
+	}
+}
+
 type RobotState struct {
 	Version  int         `json:"version"`
 	ReqID    string      `json:"reqId"`
 	Result   Result      `json:"result"`
 	Data     interface{} `json:"data"`
-	State    int         `json:"state"`
+	State    State       `json:"state"`
 	Action   int         `json:"action"`
 	Error    *string     `json:"error"`
 	Alert    *string     `json:"alert"`
@@ -133,7 +160,7 @@ func (s *RobotState) String() string {
 	if s.Alert != nil {
 		alert = *s.Alert
 	}
-	return fmt.Sprintf("State: %d, Error: %s, Alert: %s", s.State, errStr, alert)
+	return fmt.Sprintf("State: %s, Error: %s, Alert: %s", s.State, errStr, alert)
 }
 
 func (r *Robot) State() (*RobotState, error) {
