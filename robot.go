@@ -85,9 +85,7 @@ var (
 type Action int
 
 var (
-	// TODO validate that this is actually invalid. It seems to be used when the
-	// robot is docked
-	ActionInvalid              Action = 0
+	ActionNone                 Action = 0
 	ActionHouseCleaning        Action = 1
 	ActionSpotCleaning         Action = 2
 	ActionManualCleaning       Action = 3
@@ -107,8 +105,8 @@ var (
 
 func (a Action) String() string {
 	switch a {
-	case ActionInvalid:
-		return "invalid"
+	case ActionNone:
+		return "none"
 	case ActionHouseCleaning:
 		return "house cleaning"
 	case ActionSpotCleaning:
