@@ -244,6 +244,17 @@ var (
 	CleaningModeTurbo CleaningMode = 2
 )
 
+func (c CleaningMode) String() string {
+	switch c {
+	case CleaningModeEco:
+		return "eco"
+	case CleaningModeTurbo:
+		return "turbo"
+	default:
+		return "unknown"
+	}
+}
+
 type NavigationMode int
 
 var (
@@ -252,12 +263,36 @@ var (
 	NavigationModeDeep      NavigationMode = 3
 )
 
+func (n NavigationMode) String() string {
+	switch n {
+	case NavigationModeNormal:
+		return "normal"
+	case NavigationModeExtraCare:
+		return "extra care"
+	case NavigationModeDeep:
+		return "deep"
+	default:
+		return "unknown"
+	}
+}
+
 type Category int
 
 var (
 	CategoryNonPersistentMap Category = 2
 	CategoryPersistentMap    Category = 4
 )
+
+func (c Category) String() string {
+	switch c {
+	case CategoryNonPersistentMap:
+		return "non-persistent map"
+	case CategoryPersistentMap:
+		return "persistent map"
+	default:
+		return "unknown"
+	}
+}
 
 type CleaningOptions struct {
 	CleaningMode   CleaningMode
