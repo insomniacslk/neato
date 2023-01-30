@@ -26,7 +26,7 @@ func httpGet(uri string, header *url.Values, skipVerify bool, response interface
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: skipVerify},
 	}
-	client := &http.Client{Transport: tr, Timeout: 5 * time.Second}
+	client := &http.Client{Transport: tr, Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("HTTP GET failed: %w", err)
@@ -67,7 +67,7 @@ func httpPost(uri string, header *url.Values, dataMap map[string]interface{}, sk
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: skipVerify},
 	}
-	client := &http.Client{Transport: tr, Timeout: 5 * time.Second}
+	client := &http.Client{Transport: tr, Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("HTTP POST failed: %w", err)
