@@ -13,7 +13,6 @@ func NewAccount(session *PasswordSession) *Account {
 type Account struct {
 	session *PasswordSession
 	robots  []*Robot
-	maps    []*Map
 }
 
 func (a *Account) Robots() ([]*Robot, error) {
@@ -31,25 +30,17 @@ func (a *Account) Robots() ([]*Robot, error) {
 }
 
 func (a *Account) Maps() ([]*Map, error) {
-	if a.maps != nil {
-		return a.maps, nil
-	}
 	robots, err := a.Robots()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get robots")
 	}
-	type mapsResponse struct {
-		// TODO figure out the stats field
-		Stats interface{}
-		Maps  []*Map
-	}
-	maps := make([]*Map, 0)
-	var resp mapsResponse
+	allMaps := make([]*Map, 0)
 	for _, robot := range robots {
-		if err := a.session.get("users/me/robots/"+robot.Serial+"/maps", &resp); err != nil {
-			return nil, fmt.Errorf("failed to get robots: %w", err)
+		maps, err := robot.Maps()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get maps for robot '%s': %w", robot.Serial, err)
 		}
-		maps = append(maps, resp.Maps...)
+		allMaps = append(allMaps, maps...)
 	}
-	return maps, nil
+	return allMaps, nil
 }

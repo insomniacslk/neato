@@ -15,6 +15,7 @@ import (
 
 type Robot struct {
 	session *PasswordSession
+	maps    []*Map
 
 	Serial                            string   `json:"serial"`
 	Prefix                            *string  `json:"prefix"`
@@ -58,6 +59,28 @@ func (r *Robot) Header(body []byte) *url.Values {
 	header.Set("Authorization", "NEATOAPP "+signature)
 
 	return &header
+}
+
+func (r *Robot) RefreshMaps() ([]*Map, error) {
+	r.maps = nil
+	return r.Maps()
+}
+
+func (r *Robot) Maps() ([]*Map, error) {
+	if r.maps != nil {
+		return r.maps, nil
+	}
+	type mapsResponse struct {
+		// TODO figure out the stats field
+		Stats interface{}
+		Maps  []*Map
+	}
+	var resp mapsResponse
+	if err := r.session.get("users/me/robots/"+r.Serial+"/maps", &resp); err != nil {
+		return nil, fmt.Errorf("failed to get maps: %w", err)
+	}
+	r.maps = resp.Maps
+	return resp.Maps, nil
 }
 
 type Result string
