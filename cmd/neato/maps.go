@@ -3,31 +3,48 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/spf13/cobra"
 )
 
+var (
+	flagMapsShowAll bool
+)
+
 var mapsCmd = &cobra.Command{
 	Use:   "maps",
-	Short: "Show the maps of every robot",
+	Short: "Show the most recent map of every robot",
 	Run: func(cmd *cobra.Command, args []string) {
 		acc, err := getAccount()
 		if err != nil {
 			log.Fatalf("Account lookup failed: %v", err)
 		}
-		maps, err := acc.Maps()
+		robots, err := acc.Robots()
 		if err != nil {
-			log.Fatalf("Cannot get maps: %v", err)
+			log.Fatalf("Cannot get robots: %v", err)
 		}
-		if len(maps) == 0 {
-			fmt.Println("No maps found")
+		if len(robots) == 0 {
+			fmt.Println("No robots found")
 			return
 		}
-		for idx, r := range maps {
-			fmt.Printf("%d) %s\n", idx+1, r)
+		for _, r := range robots {
+			maps, err := r.Maps()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Failed to get map for robot '%s' (serial: '%s'): %v\n", r.Name, r.Serial, err)
+				continue
+			}
+			fmt.Printf("Robot '%s' (serial: '%s')\n", r.Name, r.Serial)
+			for idx, m := range maps {
+				fmt.Printf("  %d) %s\n", idx+1, m)
+				if !flagMapsShowAll {
+					break
+				}
+			}
 		}
 	},
 }
 
 func initMapsCmd() {
+	mapsCmd.Flags().BoolVarP(&flagMapsShowAll, "--show-all", "a", false, "Show all the maps for each robot instead of the most recent one")
 }
