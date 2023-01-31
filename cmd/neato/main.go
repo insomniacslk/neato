@@ -19,6 +19,7 @@ var (
 	flagConfigFile string
 	flagToken      string
 	flagDebug      bool
+	flagJSON       bool
 )
 
 var rootCmd = &cobra.Command{
@@ -34,6 +35,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&flagConfigFile, "config", "c", defaultConfigFile, "Authentication token")
 	rootCmd.PersistentFlags().StringVarP(&flagToken, "token", "t", "", "Authentication token")
 	rootCmd.PersistentFlags().BoolVarP(&flagDebug, "debug", "D", false, "Show debug output")
+	rootCmd.PersistentFlags().BoolVarP(&flagJSON, "json", "j", false, "Print output as JSON")
 
 	// flag-name to config-directive mapping
 	flagMapping := map[string]string{

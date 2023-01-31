@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -23,8 +24,16 @@ var robotsCmd = &cobra.Command{
 			fmt.Println("No robots found")
 			return
 		}
-		for idx, r := range robots {
-			fmt.Printf("%d) %s\n", idx+1, r)
+		if flagJSON {
+			j, err := json.Marshal(robots)
+			if err != nil {
+				log.Fatalf("Failed to marshal to JSON: %v", err)
+			}
+			fmt.Println(string(j))
+		} else {
+			for idx, r := range robots {
+				fmt.Printf("%d) %s\n", idx+1, r)
+			}
 		}
 	},
 }

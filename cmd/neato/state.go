@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
@@ -41,7 +42,15 @@ var stateCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Failed to get robot state: %v", err)
 		}
-		fmt.Printf("%+v\n", state)
+		if flagJSON {
+			j, err := json.Marshal(state)
+			if err != nil {
+				log.Fatalf("Failed to marshal to JSON: %v", err)
+			}
+			fmt.Println(string(j))
+		} else {
+			fmt.Printf("%s\n", state)
+		}
 	},
 }
 

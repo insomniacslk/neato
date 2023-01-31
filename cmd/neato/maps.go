@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -34,11 +35,19 @@ var mapsCmd = &cobra.Command{
 				fmt.Fprintf(os.Stderr, "Failed to get map for robot '%s' (serial: '%s'): %v\n", r.Name, r.Serial, err)
 				continue
 			}
-			fmt.Printf("Robot '%s' (serial: '%s')\n", r.Name, r.Serial)
-			for idx, m := range maps {
-				fmt.Printf("  %d) %s\n", idx+1, m)
-				if !flagMapsShowAll {
-					break
+			if flagJSON {
+				j, err := json.Marshal(maps)
+				if err != nil {
+					log.Fatalf("Failed to marshal to JSON: %v", err)
+				}
+				fmt.Println(string(j))
+			} else {
+				fmt.Printf("Robot '%s' (serial: '%s')\n", r.Name, r.Serial)
+				for idx, m := range maps {
+					fmt.Printf("  %d) %s\n", idx+1, m)
+					if !flagMapsShowAll {
+						break
+					}
 				}
 			}
 		}
