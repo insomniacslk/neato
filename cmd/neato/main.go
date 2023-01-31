@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"path"
 
 	"github.com/kirsle/configdir"
@@ -62,7 +63,7 @@ func initConfig() {
 	viper.SetConfigFile(flagConfigFile)
 	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Printf("Using config file '%s'\n", viper.ConfigFileUsed())
+		fmt.Fprintf(os.Stderr, "Using config file '%s'\n", viper.ConfigFileUsed())
 	}
 }
 
