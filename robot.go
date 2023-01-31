@@ -243,7 +243,7 @@ func (s *RobotState) String() string {
 	if s.Alert != nil {
 		alert = *s.Alert
 	}
-	return fmt.Sprintf("State: %s, Action: %s, Error: %s, Alert: %s", s.State, s.Action, errStr, alert)
+	return fmt.Sprintf("State: %s, Action: %s, Error: %s, Alert: %s, IsDocked: %v, Charge: %d", s.State, s.Action, errStr, alert, s.Details.IsDocked, s.Details.Charge)
 }
 
 func (r *Robot) State() (*RobotState, error) {
