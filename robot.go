@@ -49,7 +49,7 @@ func (r *Robot) Header(body []byte) *url.Values {
 	header.Set("Accept", "application/vnd.neato.nucleo.v1")
 
 	// RFC2616-formatted date and time
-	date := time.Now().In(time.UTC).Format("Tue, 2 Jan 2006 15:04:05 GMT")
+	date := time.Now().In(time.UTC).Format("Tue, 02 Jan 2006 15:04:05 GMT")
 	header.Set("Date", date)
 
 	msg := fmt.Sprintf("%s\n%s\n%s", strings.ToLower(r.Serial), date, body)
